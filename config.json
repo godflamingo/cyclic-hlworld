@@ -41,7 +41,7 @@
             "tls": {},
             "transport": {
                 "type": "ws",
-                "path": "qwe"
+                "path": "/qwe"
             }
         }  
     ],
