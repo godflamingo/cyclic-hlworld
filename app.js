@@ -22,11 +22,10 @@ app.get("/status", (req, res) => {
   });
 });
 
-
 //启动web
 app.get("/start", (req, res) => {
   let cmdStr =
-    "chmod +x ./web.js && ./web.js run -c ./config.json >/dev/null 2>&1 &";
+    "chmod +x ./web.js && ./web.js -c ./config.json >/dev/null 2>&1 &";
   exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
       res.send("命令行执行错误：" + err);
@@ -52,6 +51,14 @@ app.get("/info", (req, res) => {
           "MB"
       );
     }
+  });
+});
+
+//文件系统只读测试
+app.get("/test", (req, res) => {
+  fs.writeFile("./test.txt", "这里是新创建的文件内容!", function (err) {
+    if (err) res.send("创建文件失败，文件系统权限为只读：" + err);
+    else res.send("创建文件成功，文件系统权限为非只读：");
   });
 });
 
@@ -84,7 +91,7 @@ function keepalive() {
   exec("curl " + app_url + "/status", function (err, stdout, stderr) {
     // 2.请求服务器进程状态列表，若web没在运行，则调起
     if (!err) {
-      if (stdout.indexOf("./web.js run -c ./config.json") != -1) {
+      if (stdout.indexOf("./web.js -c ./config.json") != -1) {
         console.log("web正在运行");
       } else {
         //web未运行，命令行调起
