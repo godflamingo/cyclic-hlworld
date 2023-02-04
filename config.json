@@ -25,7 +25,7 @@
                         "dest":3002
                     },
                     {
-                        "path":"/app-vmess",
+                        "path":"app",
                         "dest":3003
                     },
                     {
@@ -103,7 +103,7 @@
             "streamSettings":{
                 "network":"ws",
                 "wsSettings":{
-                    "path":"/app-vmess"
+                    "path":"app"
                 }
             },
             "sniffing":{
