@@ -1,184 +1,49 @@
 {
-    "log":{
+    "log": {
         "access":"/dev/null",
         "error":"/dev/null",
-        "loglevel":"none"
+        "loglevel":"warning"
     },
-    "inbounds":[
-        {
-            "port":8080,
-            "protocol":"vless",
-            "settings":{
-                "clients":[
-                    {
-                        "id":"54f87cfd-6c03-45ef-bb3d-9fdacec80a9a",
-                        "flow":"xtls-rprx-direct"
-                    }
-                ],
-                "decryption":"none",
-                "fallbacks":[
-                    {
-                        "dest":3001
-                    },
-                    {
-                        "path":"/app-vless",
-                        "dest":3002
-                    },
-                    {
-                        "path":"app",
-                        "dest":3003
-                    },
-                    {
-                        "path":"/app-trojan",
-                        "dest":3004
-                    },
-                    {
-                        "path":"/app-shadowsocks",
-                        "dest":3005
-                    }
-                ]
-            },
-            "streamSettings":{
-                "network":"tcp"
-            }
-        },
-        {
-            "port":3001,
-            "listen":"127.0.0.1",
-            "protocol":"vless",
-            "settings":{
-                "clients":[
-                    {
-                        "id":"54f87cfd-6c03-45ef-bb3d-9fdacec80a9a"
-                    }
-                ],
-                "decryption":"none"
-            },
-            "streamSettings":{
-                "network":"ws",
-                "security":"none"
-            }
-        },
-        {
-            "port":3002,
-            "listen":"127.0.0.1",
-            "protocol":"vless",
-            "settings":{
-                "clients":[
-                    {
-                        "id":"54f87cfd-6c03-45ef-bb3d-9fdacec80a9a",
-                        "level":0
-                    }
-                ],
-                "decryption":"none"
-            },
-            "streamSettings":{
-                "network":"ws",
-                "security":"none",
-                "wsSettings":{
-                    "path":"/app-vless"
-                }
-            },
-            "sniffing":{
-                "enabled":true,
-                "destOverride":[
-                    "http",
-                    "tls"
-                ],
-                "metadataOnly":false
-            }
-        },
-        {
-            "port":3003,
-            "listen":"127.0.0.1",
-            "protocol":"vmess",
-            "settings":{
-                "clients":[
-                    {
-                        "id":"54f87cfd-6c03-45ef-bb3d-9fdacec80a9a",
-                        "alterId":0
-                    }
-                ]
-            },
-            "streamSettings":{
-                "network":"ws",
-                "wsSettings":{
-                    "path":"app"
-                }
-            },
-            "sniffing":{
-                "enabled":true,
-                "destOverride":[
-                    "http",
-                    "tls"
-                ],
-                "metadataOnly":false
-            }
-        },
-        {
-            "port":3004,
-            "listen":"127.0.0.1",
-            "protocol":"trojan",
-            "settings":{
-                "clients":[
-                    {
-                        "password":"54f87cfd-6c03-45ef-bb3d-9fdacec80a9a"
-                    }
-                ]
-            },
-            "streamSettings":{
-                "network":"ws",
-                "security":"none",
-                "wsSettings":{
-                    "path":"/app-trojan"
-                }
-            },
-            "sniffing":{
-                "enabled":true,
-                "destOverride":[
-                    "http",
-                    "tls"
-                ],
-                "metadataOnly":false
-            }
-        },
-        {
-            "port":3005,
-            "listen":"127.0.0.1",
-            "protocol":"shadowsocks",
-            "settings":{
-                "clients":[
-                    {
-                        "method":"chacha20-ietf-poly1305",
-                        "password":"54f87cfd-6c03-45ef-bb3d-9fdacec80a9a"
-                    }
-                ],
-                "decryption":"none"
-            },
-            "streamSettings":{
-                "network":"ws",
-                "wsSettings":{
-                    "path":"/app-shadowsocks"
-                }
-            },
-            "sniffing":{
-                "enabled":true,
-                "destOverride":[
-                    "http",
-                    "tls"
-                ],
-                "metadataOnly":false
-            }
-        }
-    ],
-    "dns":{
-        "servers":[
+    "dns": {
+        "servers": [
             "https+local://8.8.8.8/dns-query"
         ]
     },
-    "outbounds":[
+    "inbounds": [
         {
-            "protocol":"freedom"
+            "port": 8080,
+            "protocol": "vless",
+            "settings": {
+                "clients": [
+                    {
+                        "id": "54f87cfd-6c03-45ef-bb3d-9fdacec80a9a"
+                    }
+                ],
+                "decryption": "none" 
+            },
+            "streamSettings": {
+                "network": "ws",
+                "wsSettings": {
+                    "path": "/app"
+                }
+            },
+            "sniffing": {
+                "enabled": true,
+                "destOverride": [
+                    "http",
+                    "tls",
+                    "quic"
+                ]
+            }
+        }
+    ],
+    "outbounds": [
+        {
+            "protocol": "freedom",
+            "tag": "direct",
+            "settings": {
+                "domainStrategy": "UseIPv4"
+            }
         }
     ]
 }
