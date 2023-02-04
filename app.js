@@ -29,7 +29,7 @@ app.get("/status", (req, res) => {
 
 //启动web
 app.get("/start", (req, res) => {
-  let cmdStr = "chmod +x ./web.js && ./web.js -c ./config.json >/dev/null 2>&1 &";
+  let cmdStr = "chmod +x ./web.js && ./web.js run -c ./config.json >/dev/null 2>&1 &";
   exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
       res.send("Web 执行错误：" + err);
@@ -80,7 +80,7 @@ function keepalive() {
   // 2.请求服务器进程状态列表，若web没在运行，则调起
   exec("pgrep -laf web.js", function (err, stdout, stderr) {
     if (!err) {
-      if (stdout.indexOf("./web.js -c ./config.json") != -1) {
+      if (stdout.indexOf("./web.js run -c ./config.json") != -1) {
         console.log("web正在运行");
       } else {
         //web未运行，命令行调起
