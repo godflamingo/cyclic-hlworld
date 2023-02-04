@@ -57,8 +57,8 @@ app.use(
     changeOrigin: true, // 默认false，是否需要改变原始主机头为目标URL
     ws: true, // 是否代理websockets
     pathRewrite: {
-      // 请求中去除/api
-      "^/api": "/qwe",
+      // 请求中去除/app
+      "^/app": "/app",
     },
     onProxyReq: function onProxyReq(proxyReq, req, res) {
       // 我就打个log康康
