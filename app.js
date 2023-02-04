@@ -62,11 +62,7 @@ app.use(
       // 请求中去除/app
       "^/app": "/app",
     },
-    onProxyReq: function onProxyReq(proxyReq, req, res) {
-      // 我就打个log康康
-      console.log("-->  ", req.method, req.baseUrl, "->", proxyReq.host + proxyReq.path
-      );
-    },
+    onProxyReq: function onProxyReq(proxyReq, req, res) {},
   })
 );
 
