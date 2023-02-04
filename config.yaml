@@ -1,26 +1,31 @@
-log:
-  loglevel: info
-dns:
-  servers:
-  - https+local://8.8.8.8/dns-query
-inbounds:
-- port: 8080
-  protocol: trojan
-  settings:
-    clients:
-    - password: "123"
-  streamSettings:
-    network: ws
-    wsSettings:
-      path: qwe
-  sniffing:
-    enabled: true
-    destOverride:
-    - http
-    - tls
-    - quic
-outbounds:
-- protocol: freedom
-  tag: direct
-  settings:
-    domainStrategy: UseIPv4
+{
+  "inbounds": [
+    {
+      "type": "vmess",
+      "tag": "vmess-in",
+      "listen": "127.0.0.1",
+      "listen_port": 23323,
+      "tcp_fast_open": true,
+      "sniff": true,
+      "sniff_override_destination": false,
+      "users": [
+        {
+          "name": "imlala",
+          "uuid": "54f87cfd-6c03-45ef-bb3d-9fdacec80a9a",
+          "alterId": 0
+        }
+      ],
+      "tls": {},
+      "transport": {
+        "type": "ws",
+        "path": "qwe"
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "direct",
+      "tag": "direct"
+    }
+  ]
+}
