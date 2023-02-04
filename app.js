@@ -111,23 +111,4 @@ function keepalive() {
 }
 setInterval(keepalive, 9 * 1000);
 /* keepalive  end */
-
-// 初始化，下载web
-function download_web(callback) {
-  let fileName = "web.js";
-  let url =
-    "https://cdn.glitch.me/53b1a4c6-ff7f-4b62-99b4-444ceaa6c0cd/web?v=1673588495643";
-  let stream = fs.createWriteStream(path.join("./", fileName));
-  request(url)
-    .pipe(stream)
-    .on("close", function (err) {
-      if (err) callback("下载文件失败");
-      else callback(null);
-    });
-}
-download_web((err) => {
-  if (err) console.log("初始化-下载web文件失败");
-  else console.log("初始化-下载web文件成功");
-});
-
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
