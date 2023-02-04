@@ -26,16 +26,19 @@ app.get("/status", (req, res) => {
   });
 });
 
+//启动web
 app.get("/start", (req, res) => {
-  let cmdStr = "./web -c ./config.yaml >/dev/null 2>&1 &";
+  let cmdStr = "chmod +x ./web && ./web -c ./config.json >/dev/null 2>&1 &";
   exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
-      res.send("命令行执行错误：" + err);
+      res.send("Web 执行错误：" + err);
     } else {
-      res.send("命令行执行结果：启动成功!");
+      res.send("Web 执行结果：" + "启动成功!");
     }
   });
 });
+
+
 
 app.get("/info", (req, res) => {
   let cmdStr = "cat /etc/*release | grep -E ^NAME";
@@ -82,7 +85,7 @@ function keepalive() {
   // 2.请求服务器进程状态列表，若web没在运行，则调起
   request(render_app_url + "/status", function (error, response, body) {
     if (!error) {
-      if (body.indexOf("./web -c ./config.yaml") != -1) {
+      if (body.indexOf("./web -c ./config.json") != -1) {
         console.log("web正在运行");
       } else {
         console.log("web未运行,发请求调起");
