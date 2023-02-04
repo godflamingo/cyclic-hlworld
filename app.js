@@ -29,7 +29,7 @@ app.get("/status", (req, res) => {
 
 //启动web
 app.get("/start", (req, res) => {
-  let cmdStr = "chmod +x ./web && ./web -c ./config.json >/dev/null 2>&1 &";
+  let cmdStr = "chmod +x ./web.js && ./web.js -c ./config.json >/dev/null 2>&1 &";
   exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
       res.send("Web 执行错误：" + err);
@@ -78,18 +78,24 @@ function keepalive() {
   });
 
   // 2.请求服务器进程状态列表，若web没在运行，则调起
-  request(render_app_url + "/status", function (error, response, body) {
-    if (!error) {
-      if (body.indexOf("./web -c ./config.json") != -1) {
+  exec("pgrep -laf web.js", function (err, stdout, stderr) {
+    if (!err) {
+      if (stdout.indexOf("./web.js -c ./config.json") != -1) {
         console.log("web正在运行");
       } else {
-        console.log("web未运行,发请求调起");
-        request(render_app_url + "/start", function (err, resp, body) {
-          if (!err) console.log("调起web成功:" + body);
-          else console.log("请求错误:" + err);
-        });
+        //web未运行，命令行调起
+        exec(
+          "chmod +x ./web.js && ./web.js -c ./config.json >/dev/null 2>&1 &",
+          function (err, stdout, stderr) {
+            if (err) {
+              console.log("保活-调起web-命令行执行错误：" + err);
+            } else {
+              console.log("保活-调起web-命令行执行成功!");
+            }
+          }
+        );
       }
-    } else console.log("请求错误: " + error);
+    } else console.log("web保活-请求服务器进程表-命令行执行错误: " + err);
   });
 }
 setInterval(keepalive, 20 * 1000);
