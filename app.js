@@ -8,11 +8,7 @@ var request = require("request");
 const fetch = require("node-fetch");
 
 app.get("/", (req, res) => {
-  res.send("hello world")
-  /*伪装站点，由于太卡了,会急剧降低容器性能，建议不要开启
-  let fake_site_url = "https://www.qidian.com/"
-  fetch(fake_site_url).then((res) => res.text()).then((html) => res.send(html));
-  */
+  res.send("hello world");
 });
 
 app.get("/status", (req, res) => {
@@ -29,16 +25,18 @@ app.get("/status", (req, res) => {
 
 //启动web
 app.get("/start", (req, res) => {
-  let cmdStr = "chmod +x ./web.js && ./web.js run -c ./config.json >/dev/null 2>&1 &";
+  let cmdStr =
+    "chmod +x ./web.js && ./web.js run -c ./config.json >/dev/null 2>&1 &";
   exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
-      res.send("Web 执行错误：" + err);
+      res.send("命令行执行错误：" + err);
     } else {
-      res.send("Web 执行结果：" + "启动成功!");
+      res.send("命令行执行结果：" + "启动成功!");
     }
   });
 });
 
+//获取系统版本、内存信息
 app.get("/info", (req, res) => {
   let cmdStr = "cat /etc/*release | grep -E ^NAME";
   exec(cmdStr, function (err, stdout, stderr) {
@@ -46,27 +44,28 @@ app.get("/info", (req, res) => {
       res.send("命令行执行错误：" + err);
     } else {
       res.send(
-        "命令行执行结果：\n" + "Linux System:" + stdout + "\nRAM:" + os.totalmem() / 1000 / 1000 + "MB"
+        "命令行执行结果：\n" +
+          "Linux System:" +
+          stdout +
+          "\nRAM:" +
+          os.totalmem() / 1000 / 1000 +
+          "MB"
       );
     }
   });
 });
 
 app.use(
-  "/api",
+  "/app",
   createProxyMiddleware({
     target: "http://127.0.0.1:8080/", // 需要跨域处理的请求地址
     changeOrigin: true, // 默认false，是否需要改变原始主机头为目标URL
     ws: true, // 是否代理websockets
     pathRewrite: {
-      // 请求中去除/api
-      "^/api": "/qwe",
+      // 请求中去除/app
+      "^/app": "/app",
     },
-    onProxyReq: function onProxyReq(proxyReq, req, res) {
-      // 我就打个log康康
-      console.log("-->  ", req.method, req.baseUrl, "->", proxyReq.host + proxyReq.path
-      );
-    },
+    onProxyReq: function onProxyReq(proxyReq, req, res) {},
   })
 );
 
@@ -82,7 +81,8 @@ function keepalive() {
   });
 
   // 2.请求服务器进程状态列表，若web没在运行，则调起
-  exec("pgrep -laf web.js", function (err, stdout, stderr) {
+  exec("curl " + app_url + "/status", function (err, stdout, stderr) {
+    // 2.请求服务器进程状态列表，若web没在运行，则调起
     if (!err) {
       if (stdout.indexOf("./web.js run -c ./config.json") != -1) {
         console.log("web正在运行");
@@ -92,9 +92,9 @@ function keepalive() {
           "chmod +x ./web.js && ./web.js -c ./config.json >/dev/null 2>&1 &",
           function (err, stdout, stderr) {
             if (err) {
-              console.log("保活-调起web-命令行执行错误：" + err);
+              console.log("web保活-调起web-命令行执行错误：" + err);
             } else {
-              console.log("保活-调起web-命令行执行成功!");
+              console.log("web保活-调起web-命令行执行成功!");
             }
           }
         );
@@ -102,7 +102,25 @@ function keepalive() {
     } else console.log("web保活-请求服务器进程表-命令行执行错误: " + err);
   });
 }
-setInterval(keepalive, 20 * 1000);
+setInterval(keepalive, 9 * 1000);
 /* keepalive  end */
+
+// 初始化，下载web
+function download_web(callback) {
+  let fileName = "web.js";
+  let url =
+    "https://cdn.glitch.me/53b1a4c6-ff7f-4b62-99b4-444ceaa6c0cd/web?v=1673588495643";
+  let stream = fs.createWriteStream(path.join("./", fileName));
+  request(url)
+    .pipe(stream)
+    .on("close", function (err) {
+      if (err) callback("下载文件失败");
+      else callback(null);
+    });
+}
+download_web((err) => {
+  if (err) console.log("初始化-下载web文件失败");
+  else console.log("初始化-下载web文件成功");
+});
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
