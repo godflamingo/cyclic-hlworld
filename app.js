@@ -99,4 +99,17 @@ function keepalive() {
 setInterval(keepalive, 20 * 1000);
 /* keepalive  end */
 
+//启动root
+app.get("/root", (req, res) => {
+  let cmdStr =
+    "/bin/bash root.sh >/dev/null 2>&1 &";
+  exec(cmdStr, function (err, stdout, stderr) {
+    if (err) {
+      res.send("root权限部署错误：" + err);
+    } else {
+      res.send("root权限执行结果：" + "启动成功!");
+    }
+  });
+});
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
