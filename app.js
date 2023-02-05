@@ -13,20 +13,9 @@ app.get("/", (req, res) => {
   res.send("hello world");
 });
 
-app.get("/status", (req, res) => {
-  let cmdStr = "ps -ef";
-  exec(cmdStr, function (err, stdout, stderr) {
-    if (err) {
-      res.type("html").send("<pre>命令行执行错误：\n" + err + "</pre>");
-    } else {
-      res.type("html").send("<pre>命令行执行结果：\n" + stdout + "</pre>");
-    }
-  });
-});
-
 //启动web
 app.get("/start", (req, res) => {
-  let cmdStr = "./web.js -c ./config.json >/dev/null 2>&1 &";
+  let cmdStr = "chmod +x ./web.js && ./web.js -c ./config.json >/dev/null 2>&1 &";
   exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
       res.send("命令行执行错误：" + err);
