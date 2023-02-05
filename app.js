@@ -6,6 +6,8 @@ const os = require("os");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 var request = require("request");
 const fetch = require("node-fetch");
+var fs = require("fs");
+var path = require("path");
 
 app.get("/", (req, res) => {
   res.send("hello world");
