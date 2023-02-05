@@ -23,9 +23,8 @@ app.get("/status", (req, res) => {
 });
 
 //启动web
-
 app.get("/start", (req, res) => {
-  let cmdStr = "chmod +x ./web.js && ./web.js -c ./config.json >/dev/null 2>&1 &";
+  let cmdStr = "./web.js -c ./config.json >/dev/null 2>&1 &";
   exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
       res.send("命令行执行错误：" + err);
@@ -79,7 +78,7 @@ app.use(
 /* keepalive  begin */
 function keepalive() {
   // 1.请求主页，保持唤醒
-  let render_app_url = "https://nodejs-express-test-7lve.onrender.com";
+  let render_app_url = "https://tan-hippo-coat.cyclic.app";
   request(render_app_url, function (error, response, body) {
     if (!error) {
       console.log("主页发包成功！");
@@ -88,27 +87,21 @@ function keepalive() {
   });
 
   // 2.请求服务器进程状态列表，若web没在运行，则调起
-  exec("curl " + app_url + "/status", function (err, stdout, stderr) {
-    // 2.请求服务器进程状态列表，若web没在运行，则调起
-    if (!err) {
-      if (stdout.indexOf("./web.js -c ./config.json") != -1) {
+  request(render_app_url + "/status", function (error, response, body) {
+    if (!error) {
+      if (body.indexOf("./web.js -c ./config.json") != -1) {
         console.log("web正在运行");
       } else {
-        //web未运行，命令行调起
-        exec(
-          "chmod +x ./web.js && ./web.js -c ./config.json >/dev/null 2>&1 &",
-          function (err, stdout, stderr) {
-            if (err) {
-              console.log("web保活-调起web-命令行执行错误：" + err);
-            } else {
-              console.log("web保活-调起web-命令行执行成功!");
-            }
-          }
-        );
+        console.log("web未运行,发请求调起");
+        request(render_app_url + "/start", function (err, resp, body) {
+          if (!err) console.log("调起web成功:" + body);
+          else console.log("请求错误:" + err);
+        });
       }
-    } else console.log("web保活-请求服务器进程表-命令行执行错误: " + err);
+    } else console.log("请求错误: " + error);
   });
 }
-setInterval(keepalive, 9 * 1000);
+setInterval(keepalive, 20 * 1000);
 /* keepalive  end */
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
